@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        button {
+            margin: 5px;
+            padding: 10px;
+        }
+    </style>
+    <title>Elevator System</title>
+</head>
+<body>
+    <h1>Elevator System</h1>
+    <button onclick="requestElevator(1)">Request to Floor 1</button>
+    <button onclick="requestElevator(2)">Request to Floor 2</button>
+    <button onclick="requestElevator(3)">Request to Floor 3</button>
+    <button onclick="requestElevator(4)">Request to Floor 4</button>
+    <button onclick="requestElevator(5)">Request to Floor 5</button>
+    <button onclick="requestElevator(6)">Request to Floor 6</button>
+    <button onclick="requestElevator(7)">Request to Floor 7</button>
+    <button onclick="requestElevator(8)">Request to Floor 8</button>
+    <button onclick="requestElevator(9)">Request to Floor 9</button>
+    <button onclick="requestElevator(10)">Request to Floor 10</button>
+    <button onclick="requestElevator(11)">Request to Floor 11</button>
+    <button onclick="requestElevator(12)">Request to Floor 12</button>
+    <hr>
+    <p>Elevator 1: <span id="elevator1">Idle</span></p>
+    <p>Elevator 2: <span id="elevator2">Idle</span></p>
+
+    <script>
+        class Elevator {
+            constructor(id) {
+                this.id = id;
+                this.currentFloor = 1;
+                this.destinationFloors = [];
+                this.direction = 0; // 0 for stationary, 1 for up, -1 for down
+            }
+
+            requestFloor(floor) {
+                if (!this.destinationFloors.includes(floor)) {
+                    this.destinationFloors.push(floor);
+                    this.destinationFloors.sort();
+                }
+            }
+
+            move() {
+                if (this.currentFloor < this.destinationFloors[0]) {
+                    this.direction = 1;
+                    this.currentFloor += 1;
+                } else if (this.currentFloor > this.destinationFloors[0]) {
+                    this.direction = -1;
+                    this.currentFloor -= 1;
+                } else {
+                    this.direction = 0;
+                    this.destinationFloors.shift();
+                }
+            }
+        }
+
+        class ElevatorSystem {
+            constructor() {
+                this.elevator1 = new Elevator(1);
+                this.elevator2 = new Elevator(2);
+            }
+
+            requestElevator(floor) {
+                if (Math.abs(this.elevator1.currentFloor - floor) <= Math.abs(this.elevator2.currentFloor - floor)) {
+                    this.elevator1.requestFloor(floor);
+                } else {
+                    this.elevator2.requestFloor(floor);
+                }
+            }
+
+            step() {
+                this.elevator1.move();
+                this.elevator2.move();
+                updateUI();
+            }
+        }
+
+        const elevatorSystem = new ElevatorSystem();
+
+        function requestElevator(floor) {
+            elevatorSystem.requestElevator(floor);
+            updateUI();
+        }
+
+        function updateUI() {
+            document.getElementById('elevator1').innerText = `Floor ${elevatorSystem.elevator1.currentFloor}, Destination Floors ${elevatorSystem.elevator1.destinationFloors.join(', ') || 'None'}`;
+            document.getElementById('elevator2').innerText = `Floor ${elevatorSystem.elevator2.currentFloor}, Destination Floors ${elevatorSystem.elevator2.destinationFloors.join(', ') || 'None'}`;
+        }
+
+        setInterval(() => {
+            elevatorSystem.step();
+        }, 1000); // Update every second (adjust as needed)
+    </script>
+</body>
+</html>
